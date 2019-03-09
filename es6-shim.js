@@ -1,12 +1,12 @@
- /*!
-  * https://github.com/paulmillr/es6-shim
-  * @license es6-shim Copyright 2013-2016 by Paul Miller (http://paulmillr.com)
-  *   and contributors,  MIT License
-  * es6-shim: v0.35.3
-  * see https://github.com/paulmillr/es6-shim/blob/0.35.3/LICENSE
-  * Details and documentation:
-  * https://github.com/paulmillr/es6-shim/
-  */
+/*!
+ * https://github.com/paulmillr/es6-shim
+ * @license es6-shim Copyright 2013-2016 by Paul Miller (http://paulmillr.com)
+ *   and contributors,  MIT License
+ * es6-shim: v0.35.4
+ * see https://github.com/paulmillr/es6-shim/blob/0.35.3/LICENSE
+ * Details and documentation:
+ * https://github.com/paulmillr/es6-shim/
+ */
 
 // UMD (Universal Module Definition)
 // see https://github.com/umdjs/umd/blob/master/returnExports.js
@@ -57,7 +57,7 @@
   var arePropertyDescriptorsSupported = function () {
     // if Object.defineProperty exists but throws, it's IE 8
     return !throwsError(function () {
-      Object.defineProperty({}, 'x', { get: function () {} });
+      return Object.defineProperty({}, 'x', { get: function () { } }); // eslint-disable-line getter-return
     });
   };
   var supportsDescriptors = !!Object.defineProperty && arePropertyDescriptorsSupported();
@@ -296,12 +296,9 @@
 
   /* global document */
   var domAll = (typeof document === 'undefined' || !document) ? null : document.all;
-  /* jshint eqnull:true */
   var isNullOrUndefined = domAll == null ? function isNullOrUndefined(x) {
-    /* jshint eqnull:true */
     return x == null;
   } : function isNullOrUndefinedAndNotDocumentAll(x) {
-    /* jshint eqnull:true */
     return x == null && x !== domAll;
   };
 
@@ -864,7 +861,7 @@
   if (String.prototype.startsWith && String.prototype.endsWith) {
     var startsWithRejectsRegex = throwsError(function () {
       /* throws if spec-compliant */
-      '/a/'.startsWith(/a/);
+      return '/a/'.startsWith(/a/);
     });
     var startsWithHandlesInfinity = valueOrFalseIfThrows(function () {
       return 'abc'.startsWith('a', Infinity) === false;
@@ -1075,7 +1072,7 @@
   });
   addIterator(ArrayIterator.prototype);
 
-/*
+  /*
   var orderKeys = function orderKeys(a, b) {
     var aNumeric = String(ES.ToInteger(a)) === a;
     var bNumeric = String(ES.ToInteger(b)) === b;
@@ -1415,9 +1412,7 @@
         if (receiver instanceof NumberShim && !valueOfSucceeds) {
           return new OrigNumber(primValue);
         }
-        /* jshint newcap: false */
         return OrigNumber(primValue);
-        /* jshint newcap: true */
       };
       return NumberShim;
     }());
@@ -1432,10 +1427,8 @@
     });
     /* globals Number: true */
     /* eslint-disable no-undef, no-global-assign */
-    /* jshint -W020 */
     Number = NumberShim;
     Value.redefine(globals, 'Number', NumberShim);
-    /* jshint +W020 */
     /* eslint-enable no-undef, no-global-assign */
     /* globals Number: false */
   }
@@ -1468,7 +1461,6 @@
   // implementations skipped holes in sparse arrays. (Note that the
   // implementations of find/findIndex indirectly use shimmed
   // methods of Number, so this test has to happen down here.)
-  /*jshint elision: true */
   /* eslint-disable no-sparse-arrays */
   if ([, 1].find(function () { return true; }) === 1) {
     overrideNative(Array.prototype, 'find', ArrayPrototypeShims.find);
@@ -1477,7 +1469,6 @@
     overrideNative(Array.prototype, 'findIndex', ArrayPrototypeShims.findIndex);
   }
   /* eslint-enable no-sparse-arrays */
-  /*jshint elision: false */
 
   var isEnumerableOn = Function.bind.call(Function.bind, Object.prototype.propertyIsEnumerable);
   var ensureEnumerable = function ensureEnumerable(obj, prop) {
@@ -1619,7 +1610,7 @@
     }());
   }
 
-  var objectKeysAcceptsPrimitives = !throwsError(function () { Object.keys('foo'); });
+  var objectKeysAcceptsPrimitives = !throwsError(function () { return Object.keys('foo'); });
   if (!objectKeysAcceptsPrimitives) {
     var originalObjectKeys = Object.keys;
     overrideNative(Object, 'keys', function keys(value) {
@@ -1627,7 +1618,7 @@
     });
     keys = Object.keys;
   }
-  var objectKeysRejectsRegex = throwsError(function () { Object.keys(/a/g); });
+  var objectKeysRejectsRegex = throwsError(function () { return Object.keys(/a/g); });
   if (objectKeysRejectsRegex) {
     var regexRejectingObjectKeys = Object.keys;
     overrideNative(Object, 'keys', function keys(value) {
@@ -1646,7 +1637,7 @@
   }
 
   if (Object.getOwnPropertyNames) {
-    var objectGOPNAcceptsPrimitives = !throwsError(function () { Object.getOwnPropertyNames('foo'); });
+    var objectGOPNAcceptsPrimitives = !throwsError(function () { return Object.getOwnPropertyNames('foo'); });
     if (!objectGOPNAcceptsPrimitives) {
       var cachedWindowNames = typeof window === 'object' ? Object.getOwnPropertyNames(window) : [];
       var originalObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
@@ -1665,7 +1656,7 @@
     }
   }
   if (Object.getOwnPropertyDescriptor) {
-    var objectGOPDAcceptsPrimitives = !throwsError(function () { Object.getOwnPropertyDescriptor('foo', 'bar'); });
+    var objectGOPDAcceptsPrimitives = !throwsError(function () { return Object.getOwnPropertyDescriptor('foo', 'bar'); });
     if (!objectGOPDAcceptsPrimitives) {
       var originalObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
       overrideNative(Object, 'getOwnPropertyDescriptor', function getOwnPropertyDescriptor(value, property) {
@@ -1674,7 +1665,7 @@
     }
   }
   if (Object.seal) {
-    var objectSealAcceptsPrimitives = !throwsError(function () { Object.seal('foo'); });
+    var objectSealAcceptsPrimitives = !throwsError(function () { return Object.seal('foo'); });
     if (!objectSealAcceptsPrimitives) {
       var originalObjectSeal = Object.seal;
       overrideNative(Object, 'seal', function seal(value) {
@@ -1684,7 +1675,7 @@
     }
   }
   if (Object.isSealed) {
-    var objectIsSealedAcceptsPrimitives = !throwsError(function () { Object.isSealed('foo'); });
+    var objectIsSealedAcceptsPrimitives = !throwsError(function () { return Object.isSealed('foo'); });
     if (!objectIsSealedAcceptsPrimitives) {
       var originalObjectIsSealed = Object.isSealed;
       overrideNative(Object, 'isSealed', function isSealed(value) {
@@ -1694,7 +1685,7 @@
     }
   }
   if (Object.freeze) {
-    var objectFreezeAcceptsPrimitives = !throwsError(function () { Object.freeze('foo'); });
+    var objectFreezeAcceptsPrimitives = !throwsError(function () { return Object.freeze('foo'); });
     if (!objectFreezeAcceptsPrimitives) {
       var originalObjectFreeze = Object.freeze;
       overrideNative(Object, 'freeze', function freeze(value) {
@@ -1704,7 +1695,7 @@
     }
   }
   if (Object.isFrozen) {
-    var objectIsFrozenAcceptsPrimitives = !throwsError(function () { Object.isFrozen('foo'); });
+    var objectIsFrozenAcceptsPrimitives = !throwsError(function () { return Object.isFrozen('foo'); });
     if (!objectIsFrozenAcceptsPrimitives) {
       var originalObjectIsFrozen = Object.isFrozen;
       overrideNative(Object, 'isFrozen', function isFrozen(value) {
@@ -1714,7 +1705,7 @@
     }
   }
   if (Object.preventExtensions) {
-    var objectPreventExtensionsAcceptsPrimitives = !throwsError(function () { Object.preventExtensions('foo'); });
+    var objectPreventExtensionsAcceptsPrimitives = !throwsError(function () { return Object.preventExtensions('foo'); });
     if (!objectPreventExtensionsAcceptsPrimitives) {
       var originalObjectPreventExtensions = Object.preventExtensions;
       overrideNative(Object, 'preventExtensions', function preventExtensions(value) {
@@ -1724,7 +1715,7 @@
     }
   }
   if (Object.isExtensible) {
-    var objectIsExtensibleAcceptsPrimitives = !throwsError(function () { Object.isExtensible('foo'); });
+    var objectIsExtensibleAcceptsPrimitives = !throwsError(function () { return Object.isExtensible('foo'); });
     if (!objectIsExtensibleAcceptsPrimitives) {
       var originalObjectIsExtensible = Object.isExtensible;
       overrideNative(Object, 'isExtensible', function isExtensible(value) {
@@ -1734,7 +1725,7 @@
     }
   }
   if (Object.getPrototypeOf) {
-    var objectGetProtoAcceptsPrimitives = !throwsError(function () { Object.getPrototypeOf('foo'); });
+    var objectGetProtoAcceptsPrimitives = !throwsError(function () { return Object.getPrototypeOf('foo'); });
     if (!objectGetProtoAcceptsPrimitives) {
       var originalGetProto = Object.getPrototypeOf;
       overrideNative(Object, 'getPrototypeOf', function getPrototypeOf(value) {
@@ -1840,10 +1831,8 @@
     });
     /* globals RegExp: true */
     /* eslint-disable no-undef, no-global-assign */
-    /* jshint -W020 */
     RegExp = RegExpShim;
     Value.redefine(globals, 'RegExp', RegExpShim);
-    /* jshint +W020 */
     /* eslint-enable no-undef, no-global-assign */
     /* globals RegExp: false */
   }
@@ -2057,9 +2046,7 @@
       var sign = _sign(v);
       var abs = _abs(v);
       if (abs < BINARY_32_MIN_VALUE) {
-        return sign * roundTiesToEven(
-          abs / BINARY_32_MIN_VALUE / BINARY_32_EPSILON
-        ) * BINARY_32_MIN_VALUE * BINARY_32_EPSILON;
+        return sign * roundTiesToEven(abs / BINARY_32_MIN_VALUE / BINARY_32_EPSILON) * BINARY_32_MIN_VALUE * BINARY_32_EPSILON;
       }
       // Veltkamp's splitting (?)
       var a = (1 + (BINARY_32_EPSILON / Number.EPSILON)) * abs;
@@ -2217,14 +2204,10 @@
       };
     };
     /*global process */
-    /* jscs:disable disallowMultiLineTernary */
     var enqueue = ES.IsCallable(globals.setImmediate) ?
       globals.setImmediate :
-      typeof process === 'object' && process.nextTick ? process.nextTick :
-      makePromiseAsap() ||
-      (ES.IsCallable(makeZeroTimeout) ? makeZeroTimeout() :
-      function (task) { setTimeout(task, 0); }); // fallback
-    /* jscs:enable disallowMultiLineTernary */
+      typeof process === 'object' && process.nextTick ? process.nextTick : makePromiseAsap() ||
+      (ES.IsCallable(makeZeroTimeout) ? makeZeroTimeout() : function (task) { setTimeout(task, 0); }); // fallback
 
     // Constants for Promise implementation
     var PROMISE_IDENTITY = function (x) { return x; };
@@ -2451,7 +2434,10 @@
         values[index] = void 0;
         var nextPromise = C.resolve(nextValue);
         var resolveElement = _promiseAllResolver(
-          index, values, resultCapability, remaining
+          index,
+          values,
+          resultCapability,
+          remaining
         );
         remaining.count += 1;
         optimizedThen(nextPromise.then, nextPromise, resolveElement, resultCapability.reject);
@@ -2611,12 +2597,16 @@
         } else if (_promise.state === PROMISE_FULFILLED) {
           value = _promise.result;
           enqueuePromiseReactionJob(
-            fulfillReactionHandler, resultCapability, value
+            fulfillReactionHandler,
+            resultCapability,
+            value
           );
         } else if (_promise.state === PROMISE_REJECTED) {
           value = _promise.result;
           enqueuePromiseReactionJob(
-            rejectReactionHandler, resultCapability, value
+            rejectReactionHandler,
+            resultCapability,
+            value
           );
         } else {
           throw new TypeError('unexpected Promise state');
@@ -2649,9 +2639,9 @@
       return S.resolve(42).then(function () {}) instanceof S;
     });
     var promiseIgnoresNonFunctionThenCallbacks = !throwsError(function () {
-      globals.Promise.reject(42).then(null, 5).then(null, noop);
+      return globals.Promise.reject(42).then(null, 5).then(null, noop);
     });
-    var promiseRequiresObjectContext = throwsError(function () { globals.Promise.call(3, noop); });
+    var promiseRequiresObjectContext = throwsError(function () { return globals.Promise.call(3, noop); });
     // Promise.resolve() was errata'ed late in the ES6 process.
     // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1170742
     //      https://code.google.com/p/v8/issues/detail?id=4161
@@ -2672,6 +2662,7 @@
     // Chrome 46 (probably older too) does not retrieve a thenable's .then synchronously
     var getsThenSynchronously = supportsDescriptors && (function () {
       var count = 0;
+      // eslint-disable-next-line getter-return
       var thenable = Object.defineProperty({}, 'then', { get: function () { count += 1; } });
       Promise.resolve(thenable);
       return count === 1;
@@ -2695,9 +2686,7 @@
         !getsThenSynchronously || hasBadResolverPromise) {
       /* globals Promise: true */
       /* eslint-disable no-undef, no-global-assign */
-      /* jshint -W020 */
       Promise = PromiseShim;
-      /* jshint +W020 */
       /* eslint-enable no-undef, no-global-assign */
       /* globals Promise: false */
       overrideNative(globals, 'Promise', PromiseShim);
@@ -3086,7 +3075,7 @@
           },
 
           clear: function clear() {
-             /* eslint no-multi-assign: 1 */
+            /* eslint no-multi-assign: 1 */
             requireMapSlot(this, 'clear');
             this._map = OrigMap ? new OrigMap() : null;
             this._size = 0;
@@ -3590,7 +3579,7 @@
       preventExtensions: function preventExtensions(target) {
         throwUnlessTargetIsObject(target);
         return callAndCatchException(function () {
-          Object.preventExtensions(target);
+          return Object.preventExtensions(target);
         });
       }
     });
@@ -3676,7 +3665,7 @@
       defineProperty: function defineProperty(target, propertyKey, attributes) {
         throwUnlessTargetIsObject(target);
         return callAndCatchException(function () {
-          Object.defineProperty(target, propertyKey, attributes);
+          return Object.defineProperty(target, propertyKey, attributes);
         });
       },
 
